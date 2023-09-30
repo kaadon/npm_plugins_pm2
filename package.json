@@ -1,0 +1,37 @@
+{
+  "name": "@kaadon.com/pm2",
+  "version": "0.0.1",
+  "description": "kaadon.com's plugins pm2",
+  "keywords": [
+    "kaadon",
+    "plugins",
+    "pm2"
+  ],
+  "main": "pm2/index.js",
+  "author": "kaadon.com",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir pm2"
+  },
+  "files": [
+    "/pm2"
+  ],
+  "dependencies": {
+    "pm2": "^5.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaadon/npm_plugins_pm2.git"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7",
+    "@babel/core": "^7",
+    "@babel/generator": "^7",
+    "@babel/parser": "^7",
+    "@babel/preset-env": "^7",
+    "dotenv": "^16.3.1"
+  }
+}
