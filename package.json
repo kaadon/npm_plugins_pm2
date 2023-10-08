@@ -11,7 +11,8 @@
   "author": "kaadon.com",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --out-dir pm2"
+    "build": "babel src --out-dir pm2",
+    "test_build": "yarn build && babel example --out-dir test"
   },
   "files": [
     "/pm2"

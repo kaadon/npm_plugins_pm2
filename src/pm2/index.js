@@ -1,92 +1,96 @@
-
 export class Pm2Class {
-    pm2
-    constructor() {
-        this.pm2 = require("pm2")
+    pm2Client
+    static instance
+
+    static getInstance() {
+        if (!Pm2Class.instance) {
+            Pm2Class.instance = new Pm2Class();
+        }
+        return Pm2Class.instance;
     }
-    connectAsync =  () => {
+
+    constructor() {
+        this.pm2Client = require("pm2")
+    }
+
+    connectAsync = () => {
         return new Promise((resolve, reject) => {
-            this.pm2.connect((err) => {
+            this.pm2Client.connect((err) => {
                 if (err) reject(err);
                 resolve();
             });
         });
     };
-    restartAsync =  (process) => {
+    restartAsync = (process) => {
         return new Promise((resolve, reject) => {
-            this.pm2.restart(process, (err, proc) => {
+            this.pm2Client.restart(process, (err, proc) => {
                 if (err) reject(err);
                 resolve(proc);
             });
         });
     };
-    stopAsync =  (process) => {
+    stopAsync = (process) => {
         return new Promise((resolve, reject) => {
-            this.pm2.stop(process, (err, proc) => {
+            this.pm2Client.stop(process, (err, proc) => {
                 if (err) reject(err);
                 resolve(proc);
             });
         });
     };
-    reloadAsync =  (process) => {
+    reloadAsync = (process) => {
         return new Promise((resolve, reject) => {
-            this.pm2.reload(process, (err, proc) => {
+            this.pm2Client.reload(process, (err, proc) => {
                 if (err) reject(err);
                 resolve(proc);
             });
         });
     };
-    killDaemonAsync =  () => {
+    killDaemonAsync = () => {
         return new Promise((resolve, reject) => {
-            this.pm2.reload((err, proc) => {
+            this.pm2Client.reload((err, proc) => {
                 if (err) reject(err);
                 resolve(proc);
             });
         });
     };
-    describeAsync =  (process) => {
+    describeAsync = (process) => {
         return new Promise((resolve, reject) => {
-            this.pm2.describe(process, (err, proc) => {
+            this.pm2Client.describe(process, (err, proc) => {
                 if (err) reject(err);
                 resolve(proc[0]);
             });
         });
     };
-     listAsync =  () => {
+    listAsync = () => {
         return new Promise((resolve, reject) => {
-            this.pm2.list((err, processDescriptionList) => {
+            this.pm2Client.list((err, processDescriptionList) => {
                 if (err) reject(err);
                 resolve(processDescriptionList);
             });
         });
     };
-    startAsync =  (config) => {
+    startAsync = (config) => {
         return new Promise((resolve, reject) => {
-            this.pm2.start(config,(err, apps)=>{
+            this.pm2Client.start(config, (err, apps) => {
                 if (err) reject(err);
                 resolve(apps);
             })
         })
     }
-
-
 }
 
 export async function restart(process) {
-    const Pm2 = new Pm2Class()
+    let _Pm2 = Pm2Class.getInstance()
     try {
-        await Pm2.connectAsync();
-        let _test = await Pm2.describeAsync(process);
-        if (!_test) return {err:`Didn't find ${process}`, response: undefined};
-        if (_test.pm2_env.pm_exec_path === module.parent.parent.filename) {
-            throw new Error("Can not restart PM2 BOT");
-        }
-        let response = await Pm2.restartAsync(process);
-        return {err: undefined, response};
+        await _Pm2.connectAsync();
+        let _test = await _Pm2.describeAsync(process);
+        if (!_test) return Promise.reject(`Didn't find ${process}`);
+        let response = await _Pm2.restartAsync(process);
+        return Promise.resolve(response);
     } catch (err) {
-        return {err, response: undefined};
+        return Promise.reject(err);
     } finally {
-        Pm2.pm2.disconnect();
+        _Pm2.pm2Client.disconnect();
     }
 }
 
